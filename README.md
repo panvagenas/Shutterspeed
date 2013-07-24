@@ -3,5 +3,6 @@ Shutterspeed
 
 Facebook application framework
 
-== Licence ==
+Licence
+------------
 Under MIT licence, see LICENCE file.
