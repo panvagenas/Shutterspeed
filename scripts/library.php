@@ -101,6 +101,7 @@ function like() {
  * @return an array of arrays containing the friends of current user with any other field requested
  * 
  * @since 1.0
+ * @author panvagenas
  */
 
 function getFriends($fields='id,name'){
