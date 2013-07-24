@@ -2,6 +2,11 @@
 
 /**
  * Includes the basic scripts and markup for the header.
+ * 
+ *@author Koukis
+ *@copyright 2013 Koykis
+ *@license MIT
+ *@version 1.0
  */
  
 include 'scripts/library.php';

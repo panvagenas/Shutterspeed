@@ -2,9 +2,8 @@
 
 /**
  * This is the heart of the Shutterspeed project. Most of what you'll see in here is functions taking
- * the Facebook object apart and giving back pieces of usefull information,
+ * the Facebook object apart and constructing arrays out of pieces of usefull information,
  * database handling and quick page tab apps solutions. Have fun!
- *
  */
  
 header('p3p: CP="NOI ADM DEV PSAi COM NAV OUR OTR STP IND DEM HONK CAO PSA OUR"');
@@ -14,9 +13,9 @@ date_default_timezone_set('Europe/Athens');
 include_once "facebook.php";
 
 $conf = array(
-	'appId'        => "543856462316816",
-	'secret'       => "4248d72764de45b33c9d89eda33a0943",
-	'redirect_uri' => "https://www.facebook.com/testtpage/app_497542136989202",
+	'appId'        => "489630314445262",										// TODO Change to app id
+	'secret'       => "09bf5535424b23c9f8fe6a23359c2cb2",						// TODO Change this to app secret
+	'redirect_uri' => "https://www.facebook.com/testtpage/app_489630314445262",	// TODO Change to app redirect uri
 	'scope'        => "user_likes , publish_stream , photo_upload  , email",
 	'cookie'       => true,
 	'fileUpload'   => true
@@ -56,9 +55,10 @@ if(!strstr($_SERVER['HTTP_REFERER'], 'teamzero')){
 
 /**
  * The userID function reads the User ID from Facebook and returns it - plain and simple.
- * Input variables  : NONE.
- * Output variables :	$uid (int | the Facebook User ID / false on failure ).
  * 
+ * @return int, Facebook User ID / 0 on failure
+ * 
+ * @since 1.0
  */
 
 function userID(){
@@ -70,14 +70,14 @@ function userID(){
 	}
 	
 	return $uid;
-	
 }
 
 /**
  * The like function checks and declares if the user likes the page that hosts the application in its tab.
- * Input variables  : NONE.
- * Output variables :	$like (bool | true if user has liked / false if not ).
  * 
+ * @return bool, True if user has liked / false if not
+ * 
+ * @since 1.0
  */
 
 function like() {
@@ -91,14 +91,33 @@ function like() {
 	}
 	
 	return $like;
-	
 }
 
 /**
- * The auth function checks and declares if the user has authorized the application.
- * Input variables  : NONE.
- * Output variables :	$auth (bool | true if user has authorized / false if not ).
+ * Get a friends list of the current user
  * 
+ * @param string $fields List of fields to be returned, coma seperated. Default 'id,name'.
+ * 
+ * @return an array of arrays containing the friends of current user with any other field requested
+ * 
+ * @since 1.0
+ */
+
+function getFriends($fields='id,name'){
+	global $fb;
+	
+	$friends = $fb->api('/' . $fb->getUser() . '/friends?fields='.$fields);
+	
+	return $friends;
+}
+
+
+/**
+ * The auth function checks and declares if the user has authorized the application.
+ * 
+ * @return bool, True if user has authorized / false if not
+ * 
+ * @since 1.0
  */
 
 function auth() {
@@ -110,39 +129,22 @@ function auth() {
 	}
 	
 	return $auth;
-	
-}
-
-/**
- * The likeCheck function checks if the user likes.
- * Input variables  : $page (int | the ID of the page we want the user to like... or not).
- * Output variables :	$like_conf (bool | true if user likes the page / false if not ).
- * 
- * WARNING: To have this function work, you need to have the user_likes permission signed from the user.
- */
-
-function likeCheck($page){
-	
-	$likes =  $fb->api(array(
-		"method"    => "fql.query",
-		"query"     => "select uid from page_fan where uid=".userID()." and page_id=".$page
-	));
-	$like_conf = sizeof($likes) == 1 ? true : false;
-	return $like_conf;
-	
 }
 
 /**
  * The insertDB function is used to store information we need into our database for faster access and to generate
  * less traffic with the facebook API.
- * Input variables  : $table (string | The table name for the information to be stored).
- *										$fields (array | The list of fields in your database table).
- *										$values (array | The corresponding value for each field to be filled).
- * Output variables :	$inserted (bool | true if the operation succeded / false if not).
- *
- * WARNING(1): User information stored from Facebook's database should not be used for commercial purposes, since it is illegal.
- * WARNING(2): Images can, but SHOULD NOT be stored in databases since they make it too heavy and slow.
  * 
+ * WARNING(1): User information stored from Facebook's database should not be used for commercial purposes, since it is illegal.
+ * WARNING(2): Images can but SHOULD NOT be stored in databases since they make it too heavy and slow.
+ * 
+ * @param string $table The table name for the information to be stored
+ * @param array $fields The list of fields in your database table
+ * @param array $values The corresponding value for each field to be filled
+ * 
+ * @return bool, True if the operation succeded / false if not
+ * 
+ * @since 1.0
  */
 
 function insertDB($table, $fields, $values){
@@ -173,12 +175,14 @@ function insertDB($table, $fields, $values){
 /**
  * The countParticipations function counts the rows of the participations table where the current user's id is present.
  * It then returns the result.
- * Input variables  : $table (string | The table name for the information to be stored).
- *										$user (int | The logged in user's Facebook ID).
- * Output variables :	$count (int | the number of rows in the participation table).
  * 
+ * @param string $table The table name for the information to be stored
+ * @param int $user The logged in user's Facebook ID
+ * 
+ * @return int, the number of rows in the participation table
+ * 
+ * @since 1.0
  */
-
 
 function countParticipations($table, $user){
 	global $conn;
@@ -198,12 +202,14 @@ function countParticipations($table, $user){
 /**
  * The listParticipations function collects all the data from the current user's participation table.
  * Then returns it in an array.
- * Input variables  : $table (string | The table name for the information to be stored).
- *										$user (int | The logged in user's Facebook ID).
- * Output variables :	$recieved (array | All the data from the current user's participation table).
  * 
+ * @param string $table The table name for the information to be stored
+ * @param int $user The logged in user's Facebook ID
+ * 
+ * @return int, The logged in user's Facebook ID
+ * 
+ * @since 1.0
  */
-
 
 function listParticipations($table, $user, $params){
 	global $conn;
@@ -223,9 +229,10 @@ function listParticipations($table, $user, $params){
 /**
  * The parsePageSignedRequest function collects the information passed by Facebook into the page tab's iframe and
  * returns an array with all the information collected. (This one was leeched from somewhere in the web, kudos to the creator).
- * Input variables  : NONE.
- * Output variables :	$data (array | the data from Facebook's signed request / false on failure ).
  * 
+ * @return array, the data from Facebook's signed request / false on failure
+ * 
+ * @since 1.0
  */
 
 function parsePageSignedRequest() {
@@ -239,16 +246,18 @@ function parsePageSignedRequest() {
 		 return $data;
 	 }
 	 return false;
-	 
 }
 
 /**
  * The redirectToPageTab function is used for applications that must, strictly, run under a Facebook page tab.
  * It checks the URL that called the page and if it is under the app.facebook.com domain, it redirects the user
  * to the page tab application using Javascript.
- * Input variables  : $appUrl (string | The url of the page tab application / Just go in there and copy-paste it).
- * Output variables :	NONE (All you get is a redirect to the correct URL).
  * 
+ * @param string $appUrl The url of the page tab application / Just go in there and copy-paste it
+ * 
+ * @return NONE (All you get is a redirect to the correct URL)
+ * 
+ * @since 1.0
  */
 
 function redirectToPageTab($appUrl){
@@ -260,7 +269,6 @@ function redirectToPageTab($appUrl){
 	  echo "<script>window.top.location.href  = '".$appUrl."' </script>";
 	  exit;
 	}
-	
 }
 
 /**
@@ -268,16 +276,18 @@ function redirectToPageTab($appUrl){
  * It consists of many parts and it is strongly recommended that it sould be edited, at least for the early days of
  * the framework's development so that it suits your needs. It includes native PHP functions to merge images.
  * WARNING: Before editing, make sure you have a basic understanding of what functions like imagecopymerge() do and how.
- * 
- * Input variables  : $user (int | The Facebook User ID of the current user).
- *										$bg (string | URL of the background picture, as a JPEG type).
- *										$image (string | URL of the image to be merged with the background).
- *										$coordX (int | Horizontal coordinate from the left edge of the background, where the target image will be placed).
- *										$coordY (int | Vertical coordinate from the top edge of the background, where the target image will be placed).
- * Output variables :	$user (int | The Facebook User ID of the current user - same as user's input variable).
- * 										A file with the user's ID as its name and the suffix .png in the folder img/generated (ex. 287654321.png).
- * 
  * WARNING: The generated folder MUST have 777 permissions so that the script can create the file.
+ * 
+ * @param int $user The Facebook User ID of the current user
+ * @param string $bg URL of the background picture, as a JPEG type
+ * @param string $image URL of the image to be merged with the background
+ * @param int $coordX Horizontal coordinate from the left edge of the background, where the target image will be placed
+ * @param int $coordY Vertical coordinate from the top edge of the background, where the target image will be placed
+ * 
+ * @return int, The Facebook User ID of the current user - same as user's input variable
+ * @return A file with the user's ID as its name and the suffix .png in the folder img/generated (ex. 287654321.png)
+ * 
+ * @since 1.0
  */
 
 function editImgs($user, $bg, $image, $coordX, $coordY){
@@ -293,7 +303,6 @@ function editImgs($user, $bg, $image, $coordX, $coordY){
 	ImageDestroy($imgbg);
 	
 	return $user;
-	
 }
 
 /**
@@ -301,16 +310,18 @@ function editImgs($user, $bg, $image, $coordX, $coordY){
  * It consists of many parts and it is strongly recommended that it sould be edited, at least for the early days of
  * the framework's development so that it suits your needs. It includes native PHP functions to merge images.
  * WARNING: Before editing, make sure you have a basic understanding of what functions like imagecopymerge() do and how.
- * 
- * Input variables  : $user (int | The Facebook User ID of the current user).
- *										$bg (string | URL of the background picture, as a PNG type).
- *										$image (string | URL of the image to be merged with the background).
- *										$coordX (int | Horizontal coordinate from the left edge of the background, where the target image will be placed).
- *										$coordY (int | Vertical coordinate from the top edge of the background, where the target image will be placed).
- * Output variables :	$user (int | The Facebook User ID of the current user - same as user's input variable).
- * 										A file with the user's ID as its name and the suffix .png in the folder img/generated (ex. 287654321.png).
- * 
  * WARNING: The generated folder MUST have 777 permissions so that the script can create the file.
+ * 
+ * @param int $user The Facebook User ID of the current user
+ * @param string $bg URL of the background picture, as a JPEG type
+ * @param string $image URL of the image to be merged with the background
+ * @param int $coordX Horizontal coordinate from the left edge of the background, where the target image will be placed
+ * @param int $coordY Vertical coordinate from the top edge of the background, where the target image will be placed
+ * 
+ * @return int, The Facebook User ID of the current user - same as user's input variable
+ * @return A file with the user's ID as its name and the suffix .png in the folder img/generated (ex. 287654321.png)
+ * 
+ * @since 1.0
  */
 
 function editPngs($user, $bg, $image, $coordX, $coordY){
@@ -326,7 +337,6 @@ function editPngs($user, $bg, $image, $coordX, $coordY){
 	ImageDestroy($imgbg);
 	
 	return $user;
-	
 }
 
 /**
@@ -334,18 +344,20 @@ function editPngs($user, $bg, $image, $coordX, $coordY){
  * It consists of many parts and it is strongly recommended that it sould be edited, at least for the early days of
  * the framework's development so that it suits your needs. It includes native PHP functions to merge images with text.
  * WARNING: Before editing, make sure you have a basic understanding of what functions like imagettftext() do and how.
- * 
- * Input variables  : $user (int | The Facebook User ID of the current user).
- *										$image (string | The URL of the image to be used).
- *										$texts (array | An array of strings to be merged with the image).
- *										$coords (array of arrays | An array of arrays that contain the merge coordinates (x, y) for each text).
- *										$colors (array or arrays | An array of colors (R, G, B) for each text to be merged).
- *										$font (string | The URL of the font used to create the text).
- *										$size (int | The size of the text to be merged (in pt)).
- * Output variables :	$user (int | The Facebook User ID of the current user - same as user's input variable).
- * 										A file with the user's ID as its name and the suffix .png in the folder img/generated (ex. 287654321.png).
- * 
  * WARNING: The generated folder MUST have 777 permissions so that the script can create the file.
+ * 
+ * @param int $user The Facebook User ID of the current user
+ * @param string $image URL of the image to be merged with the background
+ * @param string $texts An array of strings to be merged with the image
+ * @param array $coords An array of arrays that contain the merge coordinates (x, y) for each text
+ * @param array $colors An array of colors (R, G, B) for each text to be merged
+ * @param string $font The URL of the font used to create the text
+ * @param int $size The size of the text to be merged (in pt)
+ * 
+ * @return int, The Facebook User ID of the current user - same as user's input variable
+ * @return A file with the user's ID as its name and the suffix .png in the folder img/generated (ex. 287654321.png)
+ * 
+ * @since 1.0
  */
 
 function editImgTxt($user, $image, $texts, $coords, $colors, $font, $size){
@@ -366,14 +378,15 @@ function editImgTxt($user, $image, $texts, $coords, $colors, $font, $size){
 	ImageDestroy($imgbg);
 	
 	echo $userId;
-	
 }
 
 /**
  * A simple function to generate a personal code for the user, intended for any use where you need a unique identifier for the user.
  * Since it is MD5 encoded, it cannot be recognized.
- * Input variables  : NONE.
- * Output variables :	$id (string | The unique identifier generated).
+ * 
+ * @return string, The unique identifier generated
+ * 
+ * @since 1.0
  */
  
 function personalCode(){
@@ -384,10 +397,15 @@ function personalCode(){
 /**
  * bit.ly PHP url shortening function. This should be enough to give you an idea of what it does. Gets your bit.ly credentials and the
  * URL you want to shorten as input and outputs a shortened URL for any use.
- *
  * The URL to get the appKey from: http://bitly.com/a/your_api_key.
+ * 
+ * @param string $url The url to be shortened
+ * @param string $login Login name to bitly.com
+ * 
+ * @return string, The shortened url
+ * 
+ * @since 1.0
  */
-	
 
 function get_bitly_short_url($url, $login, $appkey) {
 	$ch = curl_init('http://api.bitly.com/v3/shorten?login='.$login.'&apiKey='.$appkey.'&longUrl='.$url);
@@ -400,13 +418,15 @@ function get_bitly_short_url($url, $login, $appkey) {
 /**
  * The fbShare function creates a link/story on the timeline of the user. It still is a work in progress since this function
  * can also create custom links under the share block of facebook.
- * Input variables :  $link (string | The URL you want the user to share).
- *										$title (string | The title/text to appear as link at the top of the share box).
- *										$picURL (string | The URL of the picture to share (200x200 pixels)).
- *										$message (string | The message you want to appear over the share box, looks like the user wrote it).
- *										$caption (string | A short text to give an idea of what the user shared).
- *										$description (string | A longer explanation about what this link is about).
- * Output variables :	NONE (The shared link appears on the user's timeline).
+ * 
+ * @param string $link The URL you want the user to share
+ * @param string $title The title/text to appear as link at the top of the share box
+ * @param string $picURL The URL of the picture to share (200x200 pixels)
+ * @param string $message The message you want to appear over the share box, looks like the user wrote it
+ * @param string $caption A short text to give an idea of what the user shared
+ * @param string $description A longer explanation about what this link is about
+ * 
+ * @since 1.0
  */
  
 function fbShare($link, $title, $picURL, $message, $caption, $description){

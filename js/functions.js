@@ -14,9 +14,10 @@ $(document).ajaxStop(function(){
 
 /**
  * Basic authorization action to allow access to the user's profile data, based on the scope we choose.
- * Input variables  : text (string | The text to be displayed in the error message).
- * Output variables :	NONE.
+ * 
+ *@param string perms The text to be displayed in the error message
  *
+ *@since 1.0
  */
 
 function login(perms){
@@ -34,9 +35,10 @@ function login(perms){
 
 /**
  * The error function displays a warning window at the top right of the body for the user to see.
- * Input variables  : text (string | The text to be displayed in the error message).
- * Output variables :	NONE.
- *
+ * 
+ * @param string text The text to be displayed in the error message
+ * 
+ * @since 1.0
  */
 
 function error(text){
@@ -46,9 +48,10 @@ function error(text){
 
 /**
  * The global_redir function redirects the user to some URL outside the Facebook iframe.
- * Input variables  : redirUrl (string | The URL to redirect to).
- * Output variables :	NONE.
- *
+ * 
+ * @param string redirUrl The URL to redirect to
+ * 
+ * @since 1.0
  */
 
 function global_redir(redirUrl){
@@ -57,9 +60,10 @@ function global_redir(redirUrl){
 
 /**
  * The iframe_redir function redirects the user to some URL inside the Facebook iframe.
- * Input variables  : redirUrl (string | The URL to redirect to).
- * Output variables :	NONE.
- *
+ * 
+ * @param string redirUrl The URL to redirect to
+ * 
+ * @since 1.0
  */
 
 function iframe_redir(redirUrl){
@@ -69,9 +73,10 @@ function iframe_redir(redirUrl){
 /**
  * The wallpost function automatically uploads a picture to the user's profile. It is placed
  * in an album named after the application.
- * Input variables  : photoUrl (string | The URL of the picture to be uploaded).
- * Output variables :	NONE.
- *
+ * 
+ * @param string photoUrl The URL of the picture to be uploaded
+ * 
+ * @since 1.0
  */
 
 function wallpost(photoUrl){
@@ -88,13 +93,14 @@ function postCallback(){
 /**
  * The timelineShare function displays the pop-up window of Facebook, in order for the user to share a link to display
  * in their timeline.
- * Input variables  : url (string | The URL to be shared).
- *										name (string | The title of the shared link).
- *										picture (string | The of the picture that will be displayed next to the text).
- *										caption (string | Some text as subtitle).
- *										description (string | A short description of the link shared).
- * Output variables :	NONE.
- *
+ * 
+ * @param string url The URL to be shared
+ * @param string name The title of the shared link
+ * @param string picture The of the picture that will be displayed next to the text
+ * @param string caption Some text as subtitle
+ * @param string description A short description of the link shared
+ * 
+ * @since 1.0
  */
 
 function timelineShare(url, name, picture, caption, description){
@@ -110,6 +116,11 @@ function timelineShare(url, name, picture, caption, description){
 	FB.ui(obj, shareCallback);
 }
 
+/**
+ * TODO Some description
+ * 
+ * @since 1.0
+ */
 function shareCallback(){
 	$.get('scripts/participation.php');
 }
@@ -117,10 +128,11 @@ function shareCallback(){
 /**
  * The appRequest function displays the pop-up window of Facebook, in order for the user to choose friends who will recieve a
  * notification/invitation to try out the application.
- * Input variables  : text (string | The text that will be displayed in the App Center (255 Characters Max)).
- *										friends (int | The number of the maximun recipients for each request (20 Max)).
- * Output variables :	NONE.
- *
+ * 
+ * @param string text The text that will be displayed in the App Center (255 Characters Max
+ * @param int friends The number of the maximun recipients for each request (20 Max)
+ * 
+ * @since 1.0
  */
 
 function appRequest(text, friends){
@@ -134,9 +146,10 @@ function appRequest(text, friends){
 /**
  * The preload function downloads a number of images from the server to the user's RAM to be shown instantly on mouseover
  * or onclick events.
- * Input variables  : images (string | The file paths seperated by commas).
- * Output variables :	NONE.
- *
+ * 
+ * @param string images The file paths seperated by commas
+ * 
+ * @since 1.0
  */
 
 function preload(images) {
@@ -154,10 +167,12 @@ function preload(images) {
 /**
  * The appRequestReturn function displays the pop-up window of Facebook, in order for the user to choose friends who will recieve a
  * notification/invitation to try out the application. It is STRICTLY connected to its callback function, returnID.
- * appRequestReturn Input variables : text (string | The text that will be displayed in the App Center (255 Characters Max)).
- *																		friends (int | The number of the maximun recipients for each request (20 Max)).
- * Output variables :	NONE.
- *
+ * appRequestReturn
+ * 
+ * @param string text The text that will be displayed in the App Center (255 Characters Max)
+ * @param int friends The number of the maximun recipients for each request (20 Max)
+ * 
+ * @since 1.0
  */
 
 function appRequestReturn(text, friends){
@@ -168,6 +183,13 @@ function appRequestReturn(text, friends){
 	}, returnID);
 }
 
+/**
+ * TODO Some description
+ * 
+ * @param data
+ * 
+ * @since 1.0
+ */
 function returnID(data){
 	friendID = data.to;
 	$('#returnedData').html('<img src="http://graph.facebook.com/'+friendID+'/picture" class="'+friendID+'" />');
