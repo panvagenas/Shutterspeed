@@ -13,9 +13,9 @@ date_default_timezone_set('Europe/Athens');
 include_once "facebook.php";
 
 $conf = array(
-	'appId'        => "489630314445262",										// TODO Change to app id
-	'secret'       => "09bf5535424b23c9f8fe6a23359c2cb2",						// TODO Change this to app secret
-	'redirect_uri' => "https://www.facebook.com/testtpage/app_489630314445262",	// TODO Change to app redirect uri
+	'appId'        => "XXXXXXXXXXXXXXX",										// TODO Change to app id
+	'secret'       => "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",						// TODO Change this to app secret
+	'redirect_uri' => "https://www.facebook.com/testtpage/app_XXXXXXXXXXXXXXX",	// TODO Change to app redirect uri
 	'scope'        => "user_likes , publish_stream , photo_upload  , email",
 	'cookie'       => true,
 	'fileUpload'   => true
@@ -25,9 +25,12 @@ $fb = new Facebook($conf);
 
 $data = $fb->getSignedRequest();
 
-$username='teamzero';
-$password='oGwl1GhVeQVQYqZD';
-$host='mysql:host=localhost;port=3307;dbname=facebook;';
+$username=''; // TODO Your db user
+$password=''; // TODO Your db user pass
+$dbHost = ''; // TODO Usualy localhost
+$dbPort = ''; // TODO Usualy 3307
+$dbName = ''; // TODO The database name
+$host='mysql:host='.$dbHost.';port='.$dbPort.';dbname='.$dbName.';';
 try{
 	$conn = new PDO($host, $username, $password, array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
 	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -225,6 +228,28 @@ function listParticipations($table, $user, $params){
 	}
 	
 	return $recieved;
+}
+
+/**
+ * Fetch selected fields from a table
+ *
+ * @param string $table The table from witch data should be fetched
+ * @param string $fields Coma seperated fields names
+ * @return array containing the results
+ */
+function listTable($table, $fields){
+	global $conn;
+
+	try{
+		$select = "SELECT " . $fields . " FROM " . $table;
+		$query = $conn->prepare($select);
+		$query->execute();
+		$list = $query->fetchAll();
+	}catch(PDOException $e){
+		echo 'ERROR: '.$e->getMessage();
+	}
+
+	return $list;
 }
 
 /**
